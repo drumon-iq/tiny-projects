@@ -1,2 +1,3 @@
 # AlmostUsefulScripts
-Shell scripts for things?
+
+Some scripts for basic computer tasks, like starting a server
