@@ -1,3 +1,7 @@
+import random
+
+####################################################################
+
 baralho_refer = {
         "2_paus":  2, "2_copas":  2, "2_ouros":  2, "2_spada":  2,
         "3_paus":  3, "3_copas":  3, "3_ouros":  3, "3_spada":  3,
@@ -16,23 +20,46 @@ baralho_refer = {
 
 def main():
 
-    print('############################')
+    #Embelezamento de terminal
+    separador(50,'Novo Jogo')
     print('Preparando baralho ...')
 
+    #Prepara as listas e variaveis do jogo
     baralho = list()
+    dealer = list()
+    jogador = list()
+
+    #Transforma o dicionario em uma lista
     for cartas in baralho_refer.keys():
         baralho.append(cartas)
 
-    print(baralho)
+    #Debug
+    distribuir_carta(2, baralho, jogador)
+    distribuir_carta(2, baralho, dealer)
+    
+    print(f'Baralho Restante: {baralho}')
+    print(f'Dealer: {dealer}')
+    print(f'Jogador: {jogador}')
+
+    distribuir_carta(2, baralho, jogador)
+
+    print(f'Jogador: {jogador}')
 
 def jogar():
 
     return
 
+def desenhar_carta():
+    print('·······')
+    print('·<>   ·')
+    print('·  7  ·')
+    print('·   <>·')
+    print('·······')
+
 def ler_regras():
     cont = 's'
     while cont == 's' or cont == 'S':
-        separador(50)
+        separador(50,'Regras - Pag 1')
         print('Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore')
         print('culpa sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi anim')
         print('excepteur officia. Reprehenderit nostrud nostrud ipsum Lorem est aliquip')
@@ -42,12 +69,15 @@ def ler_regras():
         print('nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit ')
         print('excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea')
         print('consectetur et est culpa et culpa duis.')
-        cont = input('Reproduzir texto novamente? (s ou n)')
+        separador()
+        cont = input('Reproduzir texto novamente? (s ou n): ')
     return
 
-def mao():
+def distribuir_carta(qntd = 1, baralho = list(), mao = list()):
 
-    return
+    for i in range(qntd):
+        carta_nmr = random.randint(0, len(baralho)-1)
+        mao.append(baralho.pop(carta_nmr))
 
 def test():
     print('############################')
@@ -67,17 +97,20 @@ def test():
     baral = [cards for cards, value in baralho_refer.items()]
     print(baral)
 
-def separador(novas_linhas = 0):
-    for i in range(novas_linhas):
+def separador(novas_linhas = 0, msg = str()):       #Pode ou não receber uma quantidade de linhas para mostrar e uma mensagem 
+    for i in range(novas_linhas):                   #Mensagem é definida como vazia com str()
         print('')
-    print('============================')
+    if len(msg) == 0:
+        print('·==============================================·\n')
+    else:
+        print(f'·===<>=========<>===<{msg}>===<>=========<>===·\n')
 
 #test()
-separador(40)
+separador(40, 'Blackest of the Jackest')
 
 print('Ola, bem vindo ao BlackJack para terminais')
 nome_jog = input('Comece digitando seu nome: ')
-resp = input(f'\n{nome_jog}, voce gostaria de ler as regras antes de começar a jogar? (s ou n)')
+resp = input(f'\n{nome_jog}, voce gostaria de ler as regras antes de começar a jogar? (s ou n): ')
 if resp == 's' or resp == 'S':
     ler_regras()
 main()
