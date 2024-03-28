@@ -3,7 +3,7 @@ import random
 ####################################################################
 
 baralho_refer = {
-    #           pontos naipe nome
+        #           pontos naipe nome
         "2_paus": [ 2, 'p',   2], "2_copas": [ 2, 'c',   2], "2_ouros": [ 2, 'o',   2], "2_spada": [ 2, 's',   2],
         "3_paus": [ 3, 'p',   3], "3_copas": [ 3, 'c',   3], "3_ouros": [ 3, 'o',   3], "3_spada": [ 3, 's',   3],
         "4_paus": [ 4, 'p',   4], "4_copas": [ 4, 'c',   4], "4_ouros": [ 4, 'o',   4], "4_spada": [ 4, 's',   4],
@@ -38,27 +38,42 @@ def main():
     distribuir_carta(2, baralho, jogador)
     print('2 cartas distribuidas para o jogador!')
 
-    continuar = True
+    distribuir_carta(1, baralho, dealer)
+    print('2 cartas distribuidas para o dealer!')
+
+    mesa = [jogador, dealer]
 
     if mao_pontos(jogador) == 21:
         separador(3, 'BLACKJACK!')
         print('O jogador tem um BLACKJACK, maravilha!')
         print('Por causa do BLACKJACK sua vez será \"Pulada\"')
-        continuar = False
 
     #Vez do jogador
 
-    while continuar is True:
+    while not mao_pontos(jogador) is 21:
         separador(3,'Turno do jogador')
         mao_mostrar(jogador)
-        if mao_pontos(jogador) >= 21:
-                print('Sua mão é igual ou maior a 21 e não é mais possível continuar, vez terminada')
-                continuar = False
+        if mao_pontos(jogador) > 21: #If this happens it should also automatically invalidate the player
+            print('Sua mão é maior que 21, condição de vitoria anulada e vez terminada')
+            mesa.remove(jogador)
+            break
+        elif input('Pegar mais uma carta? (s ou n)') == 's':
+            distribuir_carta(1, baralho, jogador)
         else:
-            if input('Pegar mais uma carta? (s ou n)') == 's':
-                    distribuir_carta(1, baralho, jogador)
-            else:
-                    continuar = False
+            break
+
+    separador(3,'Turno do dealer')
+    mao_mostrar(dealer)
+    desenhar_carta()
+    while not mao_pontos(dealer) is 21:
+        if mao_pontos(dealer) > 21: #Complete Fail
+            mesa.remove(dealer)
+            break
+        elif mao_pontos(dealer) >= mao_pontos(jogador): #Winning condition, above table
+            distribuir_carta(1, baralho, dealer)
+            mao_mostrar(dealer)
+        else:
+            break
 
     #Debug
 #    distribuir_carta(2, baralho, jogador)
@@ -71,8 +86,6 @@ def main():
 #    distribuir_carta(2, baralho, jogador)
 #
 #    print(f'Jogador: {jogador}')
-#
-#    mostrar_mao(jogador)
 
 def mao_pontos(mao = list()):
     value = list()
@@ -96,34 +109,51 @@ def mao_mostrar(mao = list()):
         desenhar_carta(i)
 
 def desenhar_carta(card = str()):
-    if baralho_refer[card][1] == 's':
-        print(f' _____ ')
-        print(f'|{baralho_refer[card][2]} .  |')
-        print(f'| /.\ |')
-        print(f'|(_._)|')
-        print(f'|  |  |')
-        print(f'|____{baralho_refer[card][2]}|')
-    elif baralho_refer[card][1] == 'o':
-        print(f' _____ ')
-        print(f'|{baralho_refer[card][2]} ^  |')
-        print(f'| / \ |')
-        print(f'| \ / |')
-        print(f'|  .  |')
-        print(f'|____{baralho_refer[card][2]}|')
-    elif baralho_refer[card][1] == 'p':
-        print(f' _____ ')
-        print(f'|{baralho_refer[card][2]} _  |')
-        print(f'| ( ) |')
-        print(f'|(_\'_)|')
-        print(f'|  |  |')
-        print(f'|____{baralho_refer[card][2]}|')
-    elif baralho_refer[card][1] == 'c':
-        print(f' _____ ')
-        print(f'|{baralho_refer[card][2]}_ _ |')
-        print(f'|( v )|')
-        print(f'| \ / |')
-        print(f'|  .  |')
-        print(f'|____{baralho_refer[card][2]}|')
+    spada_carta = [ ' _____ ',
+                    '|{} .  |',
+                    '| /.\ |',
+                    '|(_._)|',
+                    '|  |  |',
+                    '|____{}|']
+
+    ouros_carta = [ ' _____ ',
+                    '|{} ^  |',
+                    '| / \ |',
+                    '| \ / |',
+                    '|  .  |',
+                    '|____{}|']
+
+    paus_carta = [ ' _____ ',
+                   '|{} _  |',
+                   '| ( ) |',
+                   '|(_\'_)|',
+                   '|  |  |',
+                   '|____{}|']
+    
+    copas_carta = [ ' _____ ',
+                    '|{}_ _ |',
+                    '|( v )|',
+                    '| \ / |',
+                    '|  .  |',
+                    '|____{}|']
+    
+    blank_carta = [ ' _____ ',
+                    '|#####|',
+                    '|#####|',
+                    '|#####|',
+                    '|#####|',
+                    ' ----- ']
+
+    cards = {'p':paus_carta, 's':spada_carta, 'c':copas_carta, 'o':ouros_carta, 'b':blank_carta }
+
+    if card == '':
+        for i in cards['b']:
+            print(i)
+    else:
+        naipe = baralho_refer[card][1]
+        for i in cards[naipe]:
+            print(i.format(baralho_refer[card][2]))
+
 
 def ler_regras():
     cont = 's'
@@ -183,3 +213,6 @@ resp = input(f'\n{nome_jog}, voce gostaria de ler as regras antes de começar a 
 if resp == 's' or resp == 'S':
     ler_regras()
 main()
+#Debug
+#desenhar_carta('2_spada')
+#desenhar_carta()
