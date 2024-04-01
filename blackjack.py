@@ -85,18 +85,6 @@ def main():
             distribuir_carta(1, baralho, dealer)
             prosseguir()
 
-    #Debug
-#    distribuir_carta(2, baralho, jogador)
-#    distribuir_carta(2, baralho, dealer)
-#    
-#    print(f'Baralho Restante: {baralho}')
-#    print(f'Dealer: {dealer}')
-#    print(f'Jogador: {jogador}')
-#
-#    distribuir_carta(2, baralho, jogador)
-#
-#    print(f'Jogador: {jogador}')
-
 def mao_pontos(mao = list()):
     value = list()
     total = 0
@@ -110,7 +98,6 @@ def mao_pontos(mao = list()):
             break
         value.remove(11)
         total -= 10
-
 
     return total
 
@@ -169,24 +156,6 @@ def distribuir_carta(qntd = 1, baralho = list(), mao = list()):
     for i in range(qntd):
         carta_nmr = random.randint(0, len(baralho)-1)
         mao.append(baralho.pop(carta_nmr))
-
-def test():
-    print('############################')
-    print('Test Function:')
-    print('Printing base dictionary:')
-    print(baralho_refer.keys())
-    print('============================')
-    print('Card list:')
-    i = 0
-    for cartas, value in baralho_refer.items():
-        print(cartas)
-        i += 1
-    print('============================')
-    print('Total cards: ', i)
-    print('============================')
-
-    baral = [cards for cards, value in baralho_refer.items()]
-    print(baral)
 
 def separador(novas_linhas = 0, msg = str()):       #Pode ou não receber uma quantidade de linhas para mostrar e uma mensagem 
     for i in range(novas_linhas):                   #Mensagem é definida como vazia com str()
