@@ -37,43 +37,53 @@ def main():
 
     distribuir_carta(2, baralho, jogador)
     print('2 cartas distribuidas para o jogador!')
+    mao_mostrar(jogador)
+    prosseguir()
 
-    distribuir_carta(1, baralho, dealer)
+    distribuir_carta(2, baralho, dealer)
     print('2 cartas distribuidas para o dealer!')
-
-    mesa = [jogador, dealer]
+    desenhar_carta(dealer[0])
+    desenhar_carta()
+    prosseguir()
 
     if mao_pontos(jogador) == 21:
         separador(3, 'BLACKJACK!')
         print('O jogador tem um BLACKJACK, maravilha!')
         print('Por causa do BLACKJACK sua vez será \"Pulada\"')
+        prosseguir()
+
+        if(mao_pontos(dealer) == 21 and len(dealer) == 2):
+            prosseguir('Voce e o dealer tem um BLACKJACK e o jogo termina em um empate')
+            return
+        prosseguir()
 
     #Vez do jogador
 
-    while not mao_pontos(jogador) is 21:
-        separador(3,'Turno do jogador')
+    while True:
+        separador(50,'Turno do jogador')
         mao_mostrar(jogador)
         if mao_pontos(jogador) > 21: #If this happens it should also automatically invalidate the player
-            print('Sua mão é maior que 21, condição de vitoria anulada e vez terminada')
-            mesa.remove(jogador)
-            break
+            print('Sua mão é maior que 21, logo você perdeu por padrão')
+            jogador.clear()
+            prosseguir()
+            return
         elif input('Pegar mais uma carta? (s ou n)') == 's':
             distribuir_carta(1, baralho, jogador)
         else:
             break
 
-    separador(3,'Turno do dealer')
-    mao_mostrar(dealer)
-    desenhar_carta()
-    while not mao_pontos(dealer) is 21:
+    while True:
+        separador(50, 'Turno do dealer')
+        mao_mostrar(dealer)
         if mao_pontos(dealer) > 21: #Complete Fail
-            mesa.remove(dealer)
+            prosseguir('Voce venceu, o dealer estorou!')
             break
-        elif mao_pontos(dealer) >= mao_pontos(jogador): #Winning condition, above table
-            distribuir_carta(1, baralho, dealer)
-            mao_mostrar(dealer)
+        elif mao_pontos(dealer) > mao_pontos(jogador): #Winning condition, above table
+            prosseguir('Voce perdeu, o dealer tem uma mão maior que a sua')
+            break
         else:
-            break
+            distribuir_carta(1, baralho, dealer)
+            prosseguir()
 
     #Debug
 #    distribuir_carta(2, baralho, jogador)
@@ -154,24 +164,6 @@ def desenhar_carta(card = str()):
         for i in cards[naipe]:
             print(i.format(baralho_refer[card][2]))
 
-
-def ler_regras():
-    cont = 's'
-    while cont == 's' or cont == 'S':
-        separador(50,'Regras - Pag 1')
-        print('Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim labore')
-        print('culpa sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi anim')
-        print('excepteur officia. Reprehenderit nostrud nostrud ipsum Lorem est aliquip')
-        print('amet voluptate dolor minim nulla est proident. Nostrud officia pariatur ut')
-        print('. Sit irure elit esse ea nulla sunt ex occaecat reprehenderit commodo officia')
-        print('Lorem duis laboris cupidatat officia voluptate. Culpa proident adipisicing id')
-        print('nulla nisi laboris ex in Lorem sunt duis officia eiusmod. Aliqua reprehenderit ')
-        print('excepteur duis sunt velit enim. Voluptate laboris sint cupidatat ullamco ut ea')
-        print('consectetur et est culpa et culpa duis.')
-        separador()
-        cont = input('Reproduzir texto novamente? (s ou n): ')
-    return
-
 def distribuir_carta(qntd = 1, baralho = list(), mao = list()):
 
     for i in range(qntd):
@@ -204,14 +196,21 @@ def separador(novas_linhas = 0, msg = str()):       #Pode ou não receber uma qu
     else:
         print(f'·===<>=========<>===<{msg}>===<>=========<>===·\n')
 
+def prosseguir(msg = str(), opc = str()):
+    if opc == '':
+        tecla = input(f'{msg}\nAperte qualquer coisa para prosseguir. $')
+    else:
+        tecla = input(f'{msg}\nAperte {opc} ou nada para prosseguir. $')
+        if tecla is opc:
+            return True
+
+    return False
+
 #test()
 separador(40, 'Blackest of the Jackest')
 
 print('Ola, bem vindo ao BlackJack para terminais')
 nome_jog = input('Comece digitando seu nome: ')
-resp = input(f'\n{nome_jog}, voce gostaria de ler as regras antes de começar a jogar? (s ou n): ')
-if resp == 's' or resp == 'S':
-    ler_regras()
 main()
 #Debug
 #desenhar_carta('2_spada')
