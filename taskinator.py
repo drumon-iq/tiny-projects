@@ -5,20 +5,44 @@ import yaml
 
 def add_task(title, desc=str()):
 
-    print(journal)      #Debugging
-    print(args)         #Debugging
+    entry = {title : desc}
 
-    #Test write to file
-    with open('output.yml', 'a') as output_file:
-        yaml.dump({'title': title, 'desc':desc}, output_file) 
-    #Remember to remove that, output must be the same as input (obviously)
+    with open('test.yml', 'r+') as yml_file:
+        buffer = yaml.safe_load(yml_file)
 
+        #print(f'Current Buffer is:\n{buffer}, Buffer type is: {type(buffer)}')
+        #print(f'Current entry is:\n{entry}, Entry type is: {type(entry)}')
+
+        if title in buffer:
+            print('Entry already found in journal, aborting')
+        else:
+            yaml.dump(entry, yml_file)
+            print('Jounal updated')
     pass
 
 def print_task(title):
+
+    with open('test.yml', 'r') as yml_file:
+        buffer = yaml.safe_load(yml_file)
+        if title in buffer:
+            print(buffer[title])
+        else:
+            print(f'\"{title}\" doesn\'t exists in file')
     pass
 
 def remove_task(title):
+    
+    with open('test.yml', 'r+') as yml_file:
+        buffer = yaml.safe_load(yml_file)
+        if title in buffer:
+            del(buffer[title])
+            print(buffer)
+            yml_file.seek(0)
+            yaml.dump(buffer, yml_file)
+            yml_file.truncate()
+            pass
+        else:
+            print(f'\"{title}\" doesn\'t exists in file')
     pass
 
 if __name__ == "__main__":
@@ -31,21 +55,25 @@ if __name__ == "__main__":
     parser.add_argument("entry_name", action='store', metavar='title', help='Specify the title of the entry to execute action, use keyword \'all\' to use entire journal', nargs='*')
 
     args = parser.parse_args()
+    print(args)         #Debugging
 
     #It reccomends using with open as to automatically close the file when it is not needed any longer, which ... might be good??
     #That will be the implementation for now, I shall observe it's behaviour closely
     
-    with open('test.yml') as file_stream:
-        journal = yaml.safe_load(file_stream) #In the next phase, this section will need an update for safe_load_all
-
-
-    print(journal)      #Debugging
-    print(args)         #Debugging
-
-
-
     action = args.action
     title = ' '.join(args.entry_name)
+
+    #Add appends new entry to the end of the journal
+    #But, due to the way the yml works it can't have two or more keys with the same name
+    #i.e : the new structure means we now must use title:description straightforward
+    #And also a check must be made before every add action, to stop the user from adding a entry
+    #which already exists, maybe creating a flag l8 on to allow substitution
+
+    #There are 2 methods now
+    #either 
+    #a: the file gets loaded ONCE in the entire program, right at the beginning, as r+, and the add action
+    #rewrites everything
+    #b: the file gets loaded in each method, the code would be safer and easier, but its ugly
 
     if action == 'add':        #Being debugged
         desc = input(f'Define a description for {title}:\n')        #Change to l8 allow the user to use text editors!
