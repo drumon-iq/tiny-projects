@@ -1,22 +1,28 @@
+#!../bin/python3
 import argparse
 import yaml
 
 # Code will only work if called directly, so far it is only being developed as a terminal application
 
-def add_task(title, desc=str()):
+def add_task(title, desc, category=str()):
 
     entry = {title : desc}
 
     with open('test.yml', 'r+') as yml_file:
-        buffer = yaml.safe_load(yml_file)
+        buffer_list = yaml.safe_load_all(yml_file)
 
-        #print(f'Current Buffer is:\n{buffer}, Buffer type is: {type(buffer)}')
-        #print(f'Current entry is:\n{entry}, Entry type is: {type(entry)}')
+        #print(f'Current Buffer is:\n{buffer}, Buffer type is: {type(buffer)}') #Debugging
+        #print(f'Current entry is:\n{entry}, Entry type is: {type(entry)}') #Debugging
 
         if title in buffer:
             print('Entry already found in journal, aborting')
         else:
-            yaml.dump(entry, yml_file)
+            buffer.update(entry)
+
+            #First, resets the entire file ... maybe a bad idea for larger files?
+            yml_file.seek(0)
+            yml_file.truncate()
+            yaml.dump(buffer, yml_file)
             print('Jounal updated')
     pass
 
@@ -36,13 +42,29 @@ def remove_task(title):
         buffer = yaml.safe_load(yml_file)
         if title in buffer:
             del(buffer[title])
-            print(buffer)
+            #print(buffer)  #Debugging
             yml_file.seek(0)
-            yaml.dump(buffer, yml_file)
             yml_file.truncate()
+            yaml.dump(buffer, yml_file)
+            print(f'{title} removed from journal')
             pass
         else:
             print(f'\"{title}\" doesn\'t exists in file')
+    pass
+
+def list_task():
+
+    with open("test.yml", "r") as yml_file:
+        buffer_list = yaml.safe_load_all(yml_file)
+
+        buffer = buffer_list[0]
+        for title in buffer:
+            print(title)
+
+        #for buffer in buffer_list:
+        #    for title in buffer:
+        #        print(title)
+        #    pass
     pass
 
 if __name__ == "__main__":
@@ -51,11 +73,11 @@ if __name__ == "__main__":
             description="It was supposed to be an todo app, but it's functionality is pretty amorphic",
             epilog="not here!"
             )
-    parser.add_argument("action", action='store', metavar='add, done, remove or print', help='Execute action upon the entry', choices=['add', 'done', 'remove', 'print'])
-    parser.add_argument("entry_name", action='store', metavar='title', help='Specify the title of the entry to execute action, use keyword \'all\' to use entire journal', nargs='*')
+    parser.add_argument("action", action='store', metavar='add, done, remove or print', help='Execute action upon the entry', choices=['add', 'done', 'remove', 'print', 'list'])
+    parser.add_argument("entry_name", action='store', metavar='task title', help='Specify the title of the entry to execute action, use keyword \'all\' to use entire journal', nargs='*')
 
     args = parser.parse_args()
-    print(args)         #Debugging
+    #print(args)         #Debugging
 
     #It reccomends using with open as to automatically close the file when it is not needed any longer, which ... might be good??
     #That will be the implementation for now, I shall observe it's behaviour closely
@@ -80,5 +102,7 @@ if __name__ == "__main__":
         add_task(title, desc)
     elif action == 'print':
         print_task(title)
+    elif action == 'list':
+        list_task()
     else:
         remove_task(title)
