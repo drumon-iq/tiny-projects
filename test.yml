@@ -1,6 +1,10 @@
-amongus: sus
-bar: foo
-foo: bar
-hello: World
----
-another: another file
+LeandroMaia:
+  Julia: Ela falou disso disso e disso, daquilo e daquilo outro, apresentou tal coisa
+    no site https://batatinha.com e faz videos no youvideos, usou framework////((()))==?)/&))
+  main: Entradas para os estagios apresentados durante a aula do Leandro Maia
+foo: bar without a category
+taskinator-names: "command name: \"line\", explica\xE7\xE3o, comando para terminal\
+  \ que emula aquela escrita de topicos no caderno, adiciona remove e leia dessas\
+  \ linhas, vapo"
+test-category:
+  foo: bar with a category
