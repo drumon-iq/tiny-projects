@@ -4,7 +4,7 @@ import yaml
 
 # Code will only work if called directly, so far it is only being developed as a terminal application
 
-def add_task(title, desc, category=''):
+def add_task(title, desc, category=None):
 
     with open('test.yml', 'r+') as yaml_file:
         buffer = yaml.safe_load(yaml_file)
@@ -12,7 +12,7 @@ def add_task(title, desc, category=''):
         #print(f'Current Buffer is:\n{buffer}, Buffer type is: {type(buffer)}') #Debugging
         #print(f'Current entry is:\n{entry}, Entry type is: {type(entry)}') #Debugging
 
-        if category == '':
+        if category == None:
             if title in buffer:
                 print(f'{title} already in journal')
                 return
@@ -39,28 +39,38 @@ def add_task(title, desc, category=''):
         yaml.dump(buffer, yaml_file)
         print('Jounal updated')
 
-def print_task(title, category=''):
+def print_task(title, category=None, all=False):
 
     with open('test.yml', 'r') as yaml_file:
         buffer = yaml.safe_load(yaml_file)
 
-        if category != '':
-            if category in buffer:
-                if title in buffer[category]:
-                    print(buffer[category][title])
-                else:
-                    print(f'\"{title}\" doesn\'t exists in {category}')
-            else:
-                print(f'{category} doesn\'t exists')
+        if category is None:
+            pass
+        elif category in buffer:
+            buffer = buffer[category]
         else:
-            if title in buffer:
-                print(buffer[title])
-            else:
-                print(f'\"{title}\" doesn\'t exists in journal')
+            print(f'{category} doesn\'t exists in file, returning failure')
+            return 1
+
+        if all is True:
+            for entry in buffer:
+                if type(buffer[entry]) == type(dict()):
+                    print(f'\\{entry}[{len(buffer[entry])}]\n')
+                    for parallax_entry in buffer[entry]:
+                        print(f'\t\\{parallax_entry}\n\t->{buffer[entry][parallax_entry]}\n')
+                else:
+                    print(f'\\{entry}\n->{buffer[entry]}\n')
+        elif title in buffer:
+            print(buffer[title])
+        else:
+            print(f'\"{title}\" doesn\'t exists in journal, returning failure')
+            return 1
+
+
 
     pass
 
-def remove_task(title, category=''):
+def remove_task(title, category='', all=False):
     
     with open('test.yml', 'r+') as yaml_file:
         buffer = yaml.safe_load(yaml_file)
@@ -91,18 +101,30 @@ def remove_task(title, category=''):
             else:
                 print(f'\"{title}\" doesn\'t exists in buffer')
 
-def list_task():
+def list_task(category=None, all=False):
 
     with open("test.yml", "r") as yaml_file:
         buffer = yaml.safe_load(yaml_file)
 
-        for title in buffer:
-            print(title)
+        if category is None:
+            pass
+        elif category in buffer:
+            buffer = buffer[category]
+        else:
+            print(f'{category} doesn\'t exists in file, returning')
+            return 1
 
+        for entry in buffer:
             #Now lists the category 2! yieppeeee
-            if type(buffer[title]) == type(dict()):
-                for categ_title in buffer[title]:
-                    print(f' -{categ_title}')
+            if type(buffer[entry]) == type(dict()):
+                print(f'{entry} [{len(buffer[entry])}]')
+                if all is True:
+                    for categ_entry in buffer[entry]:
+                        print(f' -{categ_entry}')
+            #Normal printing lol
+            else:
+                print(entry)
+
     pass
 
 if __name__ == "__main__":
@@ -113,7 +135,7 @@ if __name__ == "__main__":
             )
     parser.add_argument("action", action='store', metavar='add, done, remove or print', help='Execute action upon the entry', choices=['add', 'done', 'remove', 'print', 'list'])
     parser.add_argument("entry_name", action='store', metavar='task title', help='Specify the title of the entry to execute action, use keyword \'all\' to use entire journal', nargs='*')
-    parser.add_argument('-c', action='store', help='Specify a category for entry', default='', dest='category')
+    parser.add_argument('-c', action='store', help='Specify a category for entry', default=None, dest='category')
     #Funções para colocar depois, 
     #--overwrite para add executa um overwrite
     #all para remove, print, executa tal ação com todas as entradas do arquivo
@@ -126,12 +148,16 @@ if __name__ == "__main__":
     title = ' '.join(args.entry_name)
     category = args.category
 
+    if title == 'all':
+        all = True
+        title = ''
+
     if action == 'add':
         desc = input(f'Define a description for {title}:\n')        #Change to l8 allow the user to use text editors!
         add_task(title, desc, category)
     elif action == 'print':
-        print_task(title, category)
+        print_task(title, category, all)
     elif action == 'list':
-        list_task()
+        list_task(category, all)
     else:
-        remove_task(title, category)
+        remove_task(title, category, all)
